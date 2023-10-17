@@ -116,11 +116,9 @@ def training_step(loss, optimizer):
 
 
 def batch_process(inputs, labels, optimizer, model, processing_fcn,
-                  criterion=F.cross_entropy,
-                  net_to_output_fcn = lambda x:x):
+                  criterion=F.cross_entropy):
     # estimate model's prediction
-    output_from_net = model(inputs)
-    output = net_to_output_fcn(output_from_net)
+    output = model(inputs)
 
     # compute loss
     loss = criterion(output, labels)
@@ -134,8 +132,7 @@ def batch_process(inputs, labels, optimizer, model, processing_fcn,
 
 
 def process_all_data_from_loader_n_get_metrics(data_loader, optimizer, model, processing_fcn,
-                                               criterion=F.cross_entropy,
-                                               net_to_output_fcn = lambda x:x):
+                                               criterion=F.cross_entropy):
     device = get_model_device(model)
 
     running_loss = 0.0
@@ -149,8 +146,7 @@ def process_all_data_from_loader_n_get_metrics(data_loader, optimizer, model, pr
 
         current_loss, correctly_classified_items = batch_process(inputs, labels, optimizer, model,
                                                                  processing_fcn,
-                                                                 criterion,
-                                                                 net_to_output_fcn)  # batch_process
+                                                                 criterion)  # batch_process
         running_loss += current_loss.item()
         train_correct += correctly_classified_items
 
@@ -158,20 +154,18 @@ def process_all_data_from_loader_n_get_metrics(data_loader, optimizer, model, pr
 
 
 def train_net_on_data(data_loader, optimizer, model,
-                      criterion=F.cross_entropy,
-                      net_to_output_fcn = lambda x:x):
+                      criterion=F.cross_entropy):
     model.train()
     return process_all_data_from_loader_n_get_metrics(data_loader, optimizer, model,
-                                                      training_step, criterion, net_to_output_fcn)
+                                                      training_step, criterion)
 
 
 def eval_net_on_data(data_loader, model,
-                     criterion=F.cross_entropy,
-                     net_to_output_fcn = lambda x:x):
+                     criterion=F.cross_entropy):
     model.eval()
     return process_all_data_from_loader_n_get_metrics(data_loader,
                                                       None, model, evaluation_step,
-                                                      criterion, net_to_output_fcn)
+                                                      criterion)
 
 
 class PerformanceImprover:
@@ -263,7 +257,9 @@ def train_network_classification(net, train_loader, test_loader, optimizer, stop
 
         # evaluation step
         eval_loss, num_corrected_samples_test = eval_net_on_data(test_loader, net, criterion)
+        # eval_loss = eval_loss.to('cpu').numpy()
         testing_accuracy = num_corrected_samples_test / num_val_samples * 100.0
+        testing_accuracy = testing_accuracy.to('cpu').numpy()
 
         val_loss_history.append(eval_loss)
         val_acc_hist.append(testing_accuracy)
