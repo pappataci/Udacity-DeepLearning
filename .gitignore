@@ -1,4 +1,4 @@
-/ipynb_checkpoints/*
-/.idea/*
-/.ipynb_checkpoints/*
-/__pycache__/*
+/CourseOne/ipynb_checkpoints/*
+/CourseOne/.idea/*
+/CourseOne/.ipynb_checkpoints/*
+/CourseOne/__pycache__/*
