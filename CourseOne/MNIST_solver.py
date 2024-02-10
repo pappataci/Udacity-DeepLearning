@@ -61,8 +61,9 @@ def get_data_loaded_in_batches(current_data, batch_size, shuffle=True):
     return DataLoader(current_data, batch_size=batch_size, shuffle=shuffle)
 
 
-def get_train_and_test_data_w_batch_size(batch_size, train_data, test_data):
+def get_train_and_test_data_w_batch_size(batch_size, train_data, val_data, test_data):
     return get_data_loaded_in_batches(train_data, batch_size, shuffle=True), \
+           get_data_loaded_in_batches(val_data, batch_size, shuffle=True), \
            get_data_loaded_in_batches(test_data, batch_size, shuffle=False)
 
 
